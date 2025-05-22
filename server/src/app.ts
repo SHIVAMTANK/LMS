@@ -1,0 +1,30 @@
+import express, { NextFunction, Request, Response } from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+import {ErrorMiddleware} from "./middleware/error";
+
+dotenv.config();
+
+export const app = express();
+
+// Enable CORS
+app.use(cors({
+    origin:process.env.ORIGIN
+}));
+
+// Body parser
+app.use(express.json({ limit: "50mb" }));
+
+// Cookie parser
+app.use(cookieParser());
+
+// Test route
+app.get("/test", (req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    message: "API IS WORKING",
+  });
+});
+
+app.use(ErrorMiddleware);
