@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import {ErrorMiddleware} from "./middleware/error";
+import userRouter from "./routes/user.route";
 
 dotenv.config();
 
@@ -14,10 +15,11 @@ app.use(cors({
 }));
 
 // Body parser
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json());
 
 // Cookie parser
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
 // Test route
 app.get("/test", (req: Request, res: Response) => {
@@ -28,3 +30,5 @@ app.get("/test", (req: Request, res: Response) => {
 });
 
 app.use(ErrorMiddleware);
+
+app.use("/api/v1",userRouter);
