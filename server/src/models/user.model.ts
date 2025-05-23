@@ -1,6 +1,9 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 import { Mode } from "fs";
+import dotenv from 'dotenv'
+dotenv.config();
+import Jwt from 'jsonwebtoken'
 
 const emailRegexPattern: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Explanation:
@@ -25,6 +28,8 @@ export interface IUser extends Document {
   courses: Array<{ courseId: string }>;
   //courses which by by the user
   comparePassword: (password: string) => Promise<boolean>;
+  SignAccessToken:()=>string;
+  SignRefreshToken:()=>string;
 }
 const userSchema: Schema<IUser> = new mongoose.Schema({
   name: {
@@ -78,6 +83,27 @@ userSchema.pre<IUser>('save',async function (next) {
     this.password = await bcrypt.hash(this.password,10);
     next();
 })
+
+//sign access token
+//when user will login we will create a accesstoken 
+//when user give reload we compare it 
+
+userSchema.methods.SignAccessToken = function(){
+  return Jwt.sign({id:this._id},process.env.ACCESS_TOKEN || '');
+};
+
+//sign  refresh token
+
+userSchema.methods.SignRefreshToken = function(){
+  return Jwt.sign({id:this._id},process.env.REFRESH_TOKEN || '');
+}
+
+//access token is sort live and refresh token is long live 
+//is access token expire than through refresh token me generate new
+//access token
+//through the access token we will reach protected route
+
+
 
 //compare password
 
