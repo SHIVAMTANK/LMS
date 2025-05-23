@@ -49,7 +49,8 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, "Please enter your password"],
+    // required: [true, "Please enter your password"],
+   //because in social logins we can't enter password
     minlength:[6,"Password must be at least 6 characters"],
     select:false,
   },
@@ -89,13 +90,17 @@ userSchema.pre<IUser>('save',async function (next) {
 //when user give reload we compare it 
 
 userSchema.methods.SignAccessToken = function(){
-  return Jwt.sign({id:this._id},process.env.ACCESS_TOKEN || '');
+  return Jwt.sign({id:this._id},process.env.ACCESS_TOKEN || '',{
+    expiresIn:"5m"
+  });
 };
 
 //sign  refresh token
 
 userSchema.methods.SignRefreshToken = function(){
-  return Jwt.sign({id:this._id},process.env.REFRESH_TOKEN || '');
+  return Jwt.sign({id:this._id},process.env.REFRESH_TOKEN || '',{
+    expiresIn:"7d"
+  });
 }
 
 //access token is sort live and refresh token is long live 

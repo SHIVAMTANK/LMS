@@ -2,13 +2,18 @@ import userModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import { NextFunction, Request, Response } from "express";
-import Jwt, { Secret } from "jsonwebtoken";
+import Jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import ejs from "ejs";
 import dotenv from "dotenv";
 import path from "path";
 import sendMail from "../utils/sendMail";
-import { sendToken } from "../utils/Jwt";
+import {
+  accessTokenOptions,
+  refreshTokenOptions,
+  sendToken,
+} from "../utils/Jwt";
 import { redis } from "../utils/redis";
+import { getUserById } from "../services/user.service";
 dotenv.config();
 
 //register user
@@ -163,36 +168,134 @@ export const loginUser = CatchAsyncError(
 
 //logout user
 
-export const logoutUser = CatchAsyncError( async (req: Request, res: Response, next: NextFunction)=>{
-  try {
-    //when logout empty all token
-    res.cookie("access_token","",{maxAge:1});
-    res.cookie("refresh_token","",{maxAge:1});
+export const logoutUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      //when logout empty all token
+      res.cookie("access_token", "", { maxAge: 1 });
+      res.cookie("refresh_token", "", { maxAge: 1 });
 
+      const userId = req.user?._id as any;
+      //clear redis cache
+      //run with error
+      redis.del(userId);
 
-    const userId = req.user?._id || '';
-    //clear redis cache
-    redis.del(userId);
-    
-
-    res.status(200).json({
-      success:true,
-      message:"Logged out successfully",
-
-    })
-
-  } catch (error:any) {
-    return next(new ErrorHandler(error.message,400));
+      res.status(200).json({
+        success: true,
+        message: "Logged out successfully",
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
   }
-});
+);
 
-export const authorizeRoles = (...roles:string[])=>{
-  return (req:Request,res:Response,next:NextFunction)=>{
-    if(!roles.includes(req.user?.role || '')){
-        return next(new ErrorHandler(`Role: ${req.user?.role} is not allowed to access this resource`,403));
+export const authorizeRoles = (...roles: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!roles.includes(req.user?.role || "")) {
+      return next(
+        new ErrorHandler(
+          `Role: ${req.user?.role} is not allowed to access this resource`,
+          403
+        )
+      );
     }
     next();
-  }
+  };
   //userRouter.post('/logout',isAutheticated,authorizeRoles("admin"),logoutUser);
   // that means admin can not access this route
+};
+
+export const updateAccessToken = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const refresh_token = req.cookies.refresh_token as string;
+
+      const decoded = Jwt.verify(
+        refresh_token,
+        process.env.REFRESH_TOKEN as string
+      ) as JwtPayload;
+
+      const message = "Could not refresh token";
+      if (!decoded) {
+        return next(new ErrorHandler(message, 400));
+      }
+
+      const session = await redis.get(decoded.id as string);
+
+      if (!session) {
+        return next(new ErrorHandler(message, 400));
+      }
+
+      const user = JSON.parse(session);
+
+      const accessToken = Jwt.sign(
+        { id: user._id },
+        process.env.ACCESS_TOKEN as string,
+        {
+          expiresIn: "5m",
+        }
+      );
+
+      const refreshToken = Jwt.sign(
+        { id: user._id },
+        process.env.ACCESS_TOKEN as string,
+        {
+          expiresIn: "7d",
+        }
+      );
+
+      res.cookie("access_token", accessToken, accessTokenOptions);
+      res.cookie("refresh_token", refreshToken, refreshTokenOptions);
+
+      res.status(200).json({
+        status: "success",
+        accessToken,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+//get user info
+
+export const getUserInfo = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+      const userId = req.user?._id as any;
+      getUserById(userId,res);
+
+
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+interface ISocialAuthBody{
+    email:string,
+    name:string,
+    avatar:string
 }
+//social auth
+//implement this by frontend by nextauth and send response email , name avatar
+//then we create user
+export const socialAuth = CatchAsyncError(async (req: Request, res: Response, next: NextFunction)=>{
+  try {
+    const {email,name,avatar} = req.body as ISocialAuthBody;
+    const user = await userModel.findOne({email});
+
+    if(!user){
+      const newUser = await userModel.create({email,name,avatar});
+      sendToken(newUser,200,res);
+    }
+    else{
+      sendToken(user,200,res);
+    }
+
+  } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+})
