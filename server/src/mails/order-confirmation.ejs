@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Order Confirmation</title>
+    <style>
+      body {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        background-color: #f9f9f9;
+        color: #333;
+        padding: 20px;
+        margin: 0;
+      }
+
+      .container {
+        background: white;
+        max-width: 700px;
+        margin: auto;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .message-sm h1 {
+        color: #4caf50;
+        font-size: 24px;
+        margin-bottom: 0;
+      }
+
+      .message-sm p {
+        font-size: 16px;
+        margin-top: 5px;
+      }
+
+      .course-info h4 {
+        border-bottom: 1px solid #0000022f;
+        padding-bottom: 8px;
+        margin-top: 30px;
+        font-size: 18px;
+        color: #222;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      td {
+        padding: 8px 5px;
+      }
+
+      .first-td {
+        font-weight: bold;
+        color: #555;
+      }
+
+      .second-td {
+        color: #333;
+      }
+
+      .col-2 {
+        text-align: right;
+        padding: 8px 0;
+      }
+
+      .footer {
+        text-align: center;
+        font-size: 13px;
+        color: #777;
+        margin-top: 40px;
+        border-top: 1px solid #ddd;
+        padding-top: 15px;
+      }
+
+      .footer a {
+        color: #4caf50;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="message-sm">
+        <h1>Your E-Learning order is confirmed!</h1>
+        <p>And we’re just as excited as you are.</p>
+      </div>
+
+      <div class="course-info">
+        <h4>Here's what you ordered:</h4>
+        <table>
+          <tr>
+            <td class="first-td">Order #:</td>
+            <td class="second-td"><%= order._id %></td>
+          </tr>
+          <tr>
+            <td class="first-td">Order Date:</td>
+            <td class="second-td"><%= order.date %></td>
+          </tr>
+        </table>
+
+        <table>
+          <tr>
+            <td class="first-td">Item</td>
+            <td class="first-td">Qty</td>
+            <td class="first-td">Cost</td>
+          </tr>
+          <tr>
+            <td class="second-td"><%= order.name %></td>
+            <td class="second-td">1</td>
+            <td class="second-td">$<%= order.price %></td>
+          </tr>
+        </table>
+
+        <table>
+          <tr>
+            <td class="col-2">Subtotal:</td>
+            <td class="col-2">$<%= order.price %></td>
+          </tr>
+          <tr>
+            <td class="col-2">Total:</td>
+            <td class="col-2">$<%= order.price %></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="footer">
+        <p>
+          If you have any questions, please contact our support team at
+          <a href="mailto:support@becodemy.com">support@becodemy.com</a>
+        </p>
+        <p>&copy; <%= new Date().getFullYear() %> Elearning. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>
