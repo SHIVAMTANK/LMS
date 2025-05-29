@@ -3,6 +3,8 @@ import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import { NextFunction, Request, Response } from "express";
 import ErrorHandler from "../utils/ErrorHandler";
 import cron from "node-cron";
+import { redis } from "../utils/redis";
+import userModel from "../models/user.model";
 
 //only for admin
 export const getNotification = CatchAsyncError(

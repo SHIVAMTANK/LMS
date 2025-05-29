@@ -6,6 +6,7 @@ import {
   addReview,
   editCouser,
   getAllCourses,
+  getAllCoursesforAdmin,
   getCourseByUser,
   getSingleCourse,
   uploadCourse,
@@ -39,6 +40,9 @@ courseRouter.put("/add-answer",isAutheticated,addAnwser);
 courseRouter.put("/add-review/:id",isAutheticated,addReview);
 
 courseRouter.put("/add-reply",isAutheticated,authorizeRoles("admin"),addReplyToReview);
+
+courseRouter.get("/get-courses-admin",isAutheticated,authorizeRoles("admin"),getAllCoursesforAdmin)
+
 
 
 
