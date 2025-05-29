@@ -61,12 +61,15 @@ export const createOrder = CatchAsyncError(
 
       try {
         if (user) {
+          console.log("📤 Sending email to:", user.email);
           await sendMail({
             email: user.email,
             subject: "Order Confirmation",
             template: "order-confirmation.ejs",
             data: mailData,
           });
+
+          console.log("✅ Order email sent successfully");
         }
       } catch (error: any) {
         return next(new ErrorHandler(error.message, 500));
@@ -82,6 +85,9 @@ export const createOrder = CatchAsyncError(
         message: `You have a new order from ${course?.name}`,
         status: "unread", // or whatever default your schema expects
       });
+
+      course.purchased ? (course.purchased += 1) : course.purchased;
+      await course.save();
 
       newOrder(data, res, next);
     } catch (error: any) {
