@@ -2,6 +2,7 @@ import express from "express";
 import {
   activateUser,
   authorizeRoles,
+  deleteUser,
   getAllUsers,
   getUserInfo,
   loginUser,
@@ -12,8 +13,10 @@ import {
   updatePassword,
   updateProfilePicture,
   updateUserInfo,
+  updateUserRole,
 } from "../controllers/user.controller";
 import { isAutheticated } from "../middleware/auth";
+import { Admin } from "mongodb";
 const userRouter = express.Router();
 
 userRouter.post("/registration", registrationUser);
@@ -38,5 +41,8 @@ userRouter.put("/update-user-avatar", isAutheticated, updateProfilePicture);
 
 userRouter.get("/get-users",isAutheticated,authorizeRoles("admin"),getAllUsers)
 
+userRouter.put("/update-user-role",isAutheticated,authorizeRoles("admin"),updateUserRole);
+
+userRouter.delete("/delete-user/:id",isAutheticated,authorizeRoles("admin"),deleteUser);
 
 export default userRouter;

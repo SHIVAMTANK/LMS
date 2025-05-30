@@ -1,6 +1,7 @@
 import { Response } from "express";
 import userModel from "../models/user.model";
 import { redis } from "../utils/redis";
+import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 
 //get user by id
 export const getUserById = async (id: string, res: Response) => {
@@ -22,4 +23,19 @@ export const getAllUsersService = async (res: Response) => {
     success: true,
     users,
   });
+};
+
+export const updateUserRoleService = async (
+  res: Response,
+  id: string,
+  role: string
+) => {
+  try {
+    const user = await userModel.findByIdAndUpdate(id, { role }, { new: true });
+    //update the role and return the new updated objected
+    res.status(201).json({
+      success: true,
+      user,
+    });
+  } catch (error: any) {}
 };
