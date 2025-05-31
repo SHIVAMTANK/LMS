@@ -97,7 +97,10 @@ export const getSingleCourse = CatchAsyncError(
         const course = await CourseModel.findById(req.params.id).select(
           "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
         );
-        await redis.set(courseId, JSON.stringify(course));
+
+        await redis.set(courseId, JSON.stringify(course), "EX", 604800); //7day expire
+
+        //if not anyone is searching for this course it is autometically gone from the cache
         res.status(200).json({
           success: true,
           course,
@@ -285,7 +288,6 @@ export const addAnwser = CatchAsyncError(
           user: req.user?._id,
           title: "New Question Reply Received",
           message: `You have a new Question reply in ${courseContent.title}`,
-          
         });
       } else {
         const data = {

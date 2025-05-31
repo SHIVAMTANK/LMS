@@ -26,7 +26,7 @@ export const isAutheticated = CatchAsyncError(
       return next(new ErrorHandler("Access token is not valid", 400));
     }
     if (!user) {
-      return next(new ErrorHandler("User not found", 400));
+      return next(new ErrorHandler("Please login to access this resource", 400));
     }
 
     req.user = JSON.parse(user);
