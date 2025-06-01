@@ -2,10 +2,12 @@
 
 import React, { FC, useState } from "react";
 import Heading from "./utils/Heading";
+import Header from "./components/Header";
 
-interface Props {}
+const Page: FC = () => {
+  const [open, setOpen] = useState(false);
+  const [activeItem, setActiveItem] = useState(0);
 
-const Page: FC<Props> = () => {
   return (
     <div>
       <Heading
@@ -13,6 +15,7 @@ const Page: FC<Props> = () => {
         description="Learnex is a platform for students to learn and get help from teachers"
         keywords="Online Learning Platform, Learn Programming, Next.js Course, TypeScript, Machine Learning, Virtual Classroom, Coding for Students, eLearning System, Redux Tutorial, Web Development LMS"
       />
+      <Header open={open} setOpen={setOpen} activeItem={activeItem} />
     </div>
   );
 };
