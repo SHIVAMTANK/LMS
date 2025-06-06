@@ -2,7 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-import {ErrorMiddleware} from "./middleware/error";
+import { ErrorMiddleware } from "./middleware/error";
 import userRouter from "./routes/user.route";
 import courseRouter from "./routes/course.route";
 import orderRouter from "./routes/order.route";
@@ -15,9 +15,12 @@ dotenv.config();
 export const app = express();
 
 // Enable CORS
-app.use(cors({
-    origin:process.env.ORIGIN
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    credentials: true,
+  })
+);
 
 // Body parser
 app.use(express.json());
@@ -34,6 +37,14 @@ app.get("/test", (req: Request, res: Response) => {
   });
 });
 
-app.use(ErrorMiddleware);
+app.use(
+  "/api/v1",
+  userRouter,
+  courseRouter,
+  orderRouter,
+  notificationRouter,
+  analyticsRouter,
+  layoutRouter
+);
 
-app.use("/api/v1",userRouter,courseRouter,orderRouter,notificationRouter,analyticsRouter,layoutRouter);
+app.use(ErrorMiddleware);

@@ -13,7 +13,7 @@ const Hero = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white font-inter relative">
+    <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-black dark:to-gray-800 text-black dark:text-white font-inter relative">
       {/* Background blur elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-20 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
@@ -26,7 +26,7 @@ const Hero = () => {
         <div className="grid lg:grid-cols-[1.2fr_1.2fr] gap-30 items-center">
           {/* Left Content */}
           <div className="space-y-8 animate-fade-in text-base lg:text-3xl xl:text-xl">
-            <div className="inline-flex items-center gap-2 bg-gray-800/50 border border-gray-700 rounded-full px-4 py-2 text-sm text-gray-300 backdrop-blur-sm hover:bg-gray-700/50 transition-all duration-300">
+            <div className="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 rounded-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 backdrop-blur-sm hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-all duration-300">
               <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 animate-pulse" />
               <span>Trusted by 500k+ students</span>
             </div>
@@ -40,7 +40,7 @@ const Hero = () => {
                 Experience
               </h1>
 
-              <p className="text-lg md:text-xl text-gray-300 leading-relaxed max-w-2xl animate-fade-in delay-300">
+              <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl animate-fade-in delay-300">
                 40k+ Online courses & 500k+ registered students. Find your
                 desired courses from them and improve your learning experience
                 instantly.
@@ -54,7 +54,7 @@ const Hero = () => {
                 <Input
                   type="text"
                   placeholder="Search for courses..."
-                  className="pl-12 pr-4 py-4 bg-gray-900/80 border-gray-700 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl h-14 backdrop-blur-sm transition-all duration-300 hover:bg-gray-800/80"
+                  className="pl-12 pr-4 py-4 bg-gray-100 dark:bg-gray-900/80 border border-gray-300 dark:border-gray-700 text-black dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl h-14 backdrop-blur-sm transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-800/80"
                 />
               </div>
               <Button className="absolute right-2 top-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg h-10 transition-all duration-300 hover:scale-105">
@@ -69,7 +69,7 @@ const Hero = () => {
                   {userAvatars.map((user, index) => (
                     <Avatar
                       key={user.id}
-                      className={`w-10 h-10 border-2 border-gray-800 hover:scale-110 transition-transform duration-200 hover:z-10 relative animate-fade-in`}
+                      className={`w-10 h-10 border-2 border-white dark:border-gray-800 hover:scale-110 transition-transform duration-200 hover:z-10 relative animate-fade-in`}
                       style={{ animationDelay: `${600 + index * 100}ms` }}
                     >
                       <AvatarImage src={user.src} alt={user.name} />
@@ -78,21 +78,21 @@ const Hero = () => {
                       </AvatarFallback>
                     </Avatar>
                   ))}
-                  <div className="w-10 h-10 rounded-full bg-gray-800 border-2 border-gray-700 flex items-center justify-center hover:scale-110 transition-transform duration-200 animate-fade-in delay-700">
-                    <span className="text-xs text-gray-300">+50k</span>
+                  <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-700 flex items-center justify-center hover:scale-110 transition-transform duration-200 animate-fade-in delay-700">
+                    <span className="text-xs text-gray-700 dark:text-gray-300">+50k</span>
                   </div>
                 </div>
-                <div className="text-sm text-gray-300 animate-fade-in delay-800">
+                <div className="text-sm text-gray-700 dark:text-gray-300 animate-fade-in delay-800">
                   Join thousands of learners worldwide
                 </div>
               </div>
 
-              <div className="flex items-center gap-6 text-sm text-gray-400 animate-fade-in delay-900">
-                <div className="flex items-center gap-2 hover:text-white transition-colors duration-200">
+              <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400 animate-fade-in delay-900">
+                <div className="flex items-center gap-2 hover:text-black dark:hover:text-white transition-colors duration-200">
                   <Users className="w-4 h-4" />
                   <span>500k+ Students</span>
                 </div>
-                <div className="flex items-center gap-2 hover:text-white transition-colors duration-200">
+                <div className="flex items-center gap-2 hover:text-black dark:hover:text-white transition-colors duration-200">
                   <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                   <span>4.8/5 Rating</span>
                 </div>
@@ -102,8 +102,8 @@ const Hero = () => {
 
           {/* Right Content - Image */}
           <div className="relative animate-fade-in delay-300">
-            <div className="relative bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-3xl p-12 lg:p-16 backdrop-blur-sm border border-gray-800 hover:border-gray-700 transition-all duration-500 hover:scale-105">
-              <div className="aspect-square bg-gradient-to-br from-gray-800/20 to-gray-900/20 rounded-2xl overflow-hidden flex items-center justify-center">
+            <div className="relative bg-gray-100 dark:bg-gradient-to-br dark:from-gray-800/30 dark:to-gray-900/30 rounded-3xl p-12 lg:p-16 backdrop-blur-sm border border-gray-300 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-700 transition-all duration-500 hover:scale-105">
+              <div className="aspect-square bg-gray-200 dark:bg-gradient-to-br dark:from-gray-800/20 dark:to-gray-900/20 rounded-2xl overflow-hidden flex items-center justify-center">
                 <div className="relative w-full h-full rounded-2xl overflow-hidden group">
                   <Image
                     src="/ChatGPT Image Jun 2, 2025, 11_14_51 AM.png"

@@ -1,7 +1,9 @@
 import { styles } from "@/app/styles/style";
-import React, { FC, useRef, useState } from "react";
+import { useActivationMutation } from "@/redux/features/auth/authApi";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { VscWorkspaceTrusted } from "react-icons/vsc";
+import { useSelector } from "react-redux";
 
 type Props = {
   setRoute: (route: string) => void;
@@ -16,7 +18,28 @@ type VerifyNumbertype = {
 };
 
 const Verification: FC<Props> = ({ setRoute }) => {
+  const { token } = useSelector((state: any) => state.auth);
+
+  const [activation, { isSuccess, error }] = useActivationMutation();
+
   const [invalidError, setInvalidError] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Account activated successfully");
+      setRoute("Login");
+    }
+    if (error) {
+      if ("data" in error) {
+        const errorData = error as any;
+        toast.error(errorData.data.message);
+        setInvalidError(true);
+      } else {
+        console.log("An error occured: ", error);
+      }
+    }
+  }, [isSuccess, error, setRoute]);
+
   const inputRefs = [
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
@@ -31,7 +54,15 @@ const Verification: FC<Props> = ({ setRoute }) => {
   });
 
   const VerificationHandler = async () => {
-   setInvalidError(true);
+    const VerificationNumber = Object.values(verifyNumber).join("");
+    if (VerificationNumber.length !== 4) {
+      setInvalidError(true);
+      return;
+    }
+    await activation({
+      activation_token: token,
+      activation_code: VerificationNumber,
+    });
   };
 
   const handleInputChange = (index: number, value: string) => {
@@ -77,10 +108,9 @@ const Verification: FC<Props> = ({ setRoute }) => {
       <br />
       <br />
       <div className="w-full flex justify-center">
-        <button
-          className={`${styles.button}`}
-          onClick={VerificationHandler}
-        >Varify OTP</button>
+        <button className={`${styles.button}`} onClick={VerificationHandler}>
+          Varify OTP
+        </button>
       </div>
       <br />
       <h5 className="text-[14px] pt-4 text-center font-Poppins text-black dark:text-white">
