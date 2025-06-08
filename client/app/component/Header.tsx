@@ -7,7 +7,13 @@ import { HiOutlineUserCircle } from "react-icons/hi2";
 import CustomModal from "../utils/CustomModal";
 import Login from "../component/Auth/Login";
 import SignUp from "../component/Auth/SignUp";
-import Verification from '../component/Auth/Verification';
+import Verification from "../component/Auth/Verification";
+import { useSelector } from "react-redux";
+import Image from "next/image";
+import avatar from "../../public/avatar.png";
+import { useSession } from "next-auth/react";
+import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
+import toast from "react-hot-toast";
 
 type Props = {
   open: boolean;
@@ -20,6 +26,26 @@ type Props = {
 const Header: FC<Props> = ({ open, setOpen, route, setRoute, activeItem }) => {
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
+  const { user } = useSelector((state: any) => state.auth);
+  const { data } = useSession();
+  const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
+
+  // console.log(data);
+
+  useEffect(() => {
+    if (!user) {
+      if (data) {
+        socialAuth({
+          email: data?.user?.email,
+          name: data?.user?.name,
+          avatar: data?.user?.image,
+        });
+      }
+    }
+    if(isSuccess){
+      toast.success("Login successfull")
+    }
+  }, [data, isSuccess, error, user, socialAuth]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,6 +60,9 @@ const Header: FC<Props> = ({ open, setOpen, route, setRoute, activeItem }) => {
       setOpenSidebar(false);
     }
   };
+
+  // console.log(user);
+
   return (
     <div className="w-full relative">
       <div
@@ -62,11 +91,21 @@ const Header: FC<Props> = ({ open, setOpen, route, setRoute, activeItem }) => {
                   onClick={() => setOpenSidebar(true)}
                 />
               </div>
-              <HiOutlineUserCircle
-                size={25}
-                className="hidden md:block cursor-pointer dark:text-white text-black"
-                onClick={() => setOpen(true)}
-              />
+              {user ? (
+                <Link href={"/profile"}>
+                  <Image
+                    src={user.avatar ? user.avatar : avatar}
+                    alt=""
+                    className="w-[30px] h-[30px] rounded-full cursor-pointer"
+                  />
+                </Link>
+              ) : (
+                <HiOutlineUserCircle
+                  size={25}
+                  className="hidden md:block cursor-pointer dark:text-white text-black"
+                  onClick={() => setOpen(true)}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -120,9 +159,8 @@ const Header: FC<Props> = ({ open, setOpen, route, setRoute, activeItem }) => {
           )}
         </>
       )}
-      {
-        route==="Verification" && (
-           <>
+      {route === "Verification" && (
+        <>
           {open && (
             <CustomModal
               open={open}
@@ -133,8 +171,7 @@ const Header: FC<Props> = ({ open, setOpen, route, setRoute, activeItem }) => {
             />
           )}
         </>
-        )
-      }
+      )}
     </div>
   );
 };
