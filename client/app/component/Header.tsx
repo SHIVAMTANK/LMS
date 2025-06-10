@@ -132,6 +132,10 @@ const Header: FC<Props> = ({ open, setOpen, route, setRoute, activeItem }) => {
           </div>
         )}
       </div>
+      {/* model based routing is happing in this  */}
+      {/* when is click signup it's only change the state of component  form */}
+      {/* login to signup */}
+      
       {route === "Login" && (
         <>
           {open && (

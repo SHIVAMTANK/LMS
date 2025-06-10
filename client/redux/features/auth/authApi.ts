@@ -92,6 +92,13 @@ export const authApi = apiSlice.injectEndpoints({
         }
       },
     }),
+    loadUser:builder.query({
+      query:()=>({
+        url:"me",
+        method:"GET",
+        credentials:"include" as const,
+      })
+    })
   }),
 });
 
@@ -100,4 +107,5 @@ export const {
   useActivationMutation,
   useLoginMutation,
   useSocialAuthMutation,
+  useLoadUserQuery,
 } = authApi;
