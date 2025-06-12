@@ -318,18 +318,10 @@ interface IUpdateUserInfo {
 export const updateUserInfo = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, email } = req.body as IUpdateUserInfo;
+      const { name } = req.body as IUpdateUserInfo;
       const userId = req.user?._id;
 
       const user = await userModel.findById(userId);
-
-      if (email && user) {
-        const isEmailExist = await userModel.findOne({ email });
-        if (isEmailExist) {
-          return next(new ErrorHandler("Email already exits", 400));
-        }
-        user.email = email;
-      }
 
       if (name && user) {
         user.name = name;
@@ -352,16 +344,18 @@ export const updateUserInfo = CatchAsyncError(
 
 //update user pass
 interface IUpdatePassword {
-  odlPassword: string;
+  oldPassword: string;
   newPassword: string;
 }
 
 export const updatePassword = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { odlPassword, newPassword } = req.body as IUpdatePassword;
+      console.log(req.body);
+      
+      const { oldPassword, newPassword } = req.body as IUpdatePassword;
 
-      if (!odlPassword || !newPassword) {
+      if (!oldPassword || !newPassword) {
         return next(new ErrorHandler("Please enter old and new password", 400));
       }
 
@@ -371,19 +365,17 @@ export const updatePassword = CatchAsyncError(
         return next(new ErrorHandler("Invalid user", 400));
       }
 
-      const isPasswordMatch = await user?.comparePassword(odlPassword);
+      const isPasswordMatch = await user.comparePassword(oldPassword);
 
       if (!isPasswordMatch) {
         return next(new ErrorHandler("Invalid old password", 400));
       }
 
       user.password = newPassword;
-
       await user.save();
 
-      //update redis
-
       await redis.set(req.user?._id as any, JSON.stringify(user));
+
       res.status(201).json({
         success: true,
         user,
@@ -393,6 +385,7 @@ export const updatePassword = CatchAsyncError(
     }
   }
 );
+
 
 interface IUpdateProfilePicture {
   avatar: string;
@@ -426,6 +419,7 @@ export const updateProfilePicture = CatchAsyncError(
           const myCloud = await cloudinary.v2.uploader.upload(avatar, {
             folder: "avatars",
             width: 150,
+            resource_type:"auto"
           });
           user.avatar = {
             public_id: myCloud.public_id,

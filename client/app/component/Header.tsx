@@ -12,7 +12,10 @@ import { useSelector } from "react-redux";
 import Image from "next/image";
 import avatar from "../../public/avatar.png";
 import { useSession } from "next-auth/react";
-import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
+import {
+  useLogoutQuery,
+  useSocialAuthMutation,
+} from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
 
 type Props = {
@@ -30,23 +33,44 @@ const Header: FC<Props> = ({ open, setOpen, route, setRoute, activeItem }) => {
   const { data } = useSession();
   const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
 
+  const [logOut, setLogout] = useState(false);
+
+  const {} = useLogoutQuery(undefined, {
+    skip: !logOut ? true : false,
+  });
   // console.log(data);
 
+  const avatarSrc =
+    typeof user.avatar === "string" && user.avatar.trim()
+      ? user.avatar
+      : avatar;
+
+    
   useEffect(() => {
-    if (!user) {
-      if (data) {
-        socialAuth({
-          email: data?.user?.email,
-          name: data?.user?.name,
-          avatar: data?.user?.image,
-        });
+    // Sync session with Redux only when using social login
+    if (!user && data) {
+      localStorage.setItem("wasSocialUser", "true");
+      socialAuth({
+        email: data?.user?.email,
+        name: data?.user?.name,
+        avatar: data?.user?.image,
+      });
+    }
+
+    // Handle logout only if it was a social login session
+    if (!user && data === null && typeof window !== "undefined") {
+      const wasSocialUser = localStorage.getItem("wasSocialUser") === "true";
+      if (wasSocialUser) {
+        setLogout(true);
+        localStorage.removeItem("wasSocialUser");
       }
     }
-    if(isSuccess){
-      toast.success("Login successfull")
+
+    // Show toast after successful social login
+    if (data === null && isSuccess) {
+      toast.success("Login successful");
     }
   }, [data, isSuccess, error, user, socialAuth]);
-
   useEffect(() => {
     const handleScroll = () => {
       setActive(window.scrollY > 80);
@@ -94,9 +118,10 @@ const Header: FC<Props> = ({ open, setOpen, route, setRoute, activeItem }) => {
               {user ? (
                 <Link href={"/profile"}>
                   <Image
-                    src={user.avatar ? user.avatar : avatar}
-                    alt=""
+                    src={avatarSrc}
+                    alt="User Avatar"
                     className="w-[30px] h-[30px] rounded-full cursor-pointer"
+                    style={{border:activeItem === 5 ? "2px solide #37a39a":"none"}}
                   />
                 </Link>
               ) : (
@@ -135,7 +160,7 @@ const Header: FC<Props> = ({ open, setOpen, route, setRoute, activeItem }) => {
       {/* model based routing is happing in this  */}
       {/* when is click signup it's only change the state of component  form */}
       {/* login to signup */}
-      
+
       {route === "Login" && (
         <>
           {open && (
