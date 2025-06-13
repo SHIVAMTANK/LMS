@@ -18,7 +18,7 @@ const Page: React.FC<Props> = ({}) => {
     <div>
       <Protected>
         <Heading
-          title={`${user.name} Profile`}
+          title={`${user.name} Profile - Learnex`}
           description="Learnex is a platform for students to learn and get help from teachers"
           keywords="Online Learning Platform, Learn Programming, Next.js Course, TypeScript, Machine Learning, Virtual Classroom, Coding for Students, eLearning System, Redux Tutorial, Web Development LMS"
         />
