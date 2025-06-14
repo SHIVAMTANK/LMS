@@ -3,11 +3,12 @@ import React, { useState } from "react";
 import CourseInformation from "./CourseInformation";
 import CourseOption from "./CourseOption";
 import CourseData from "./CourseData";
+import CourseContent from "./CourseContent";
 
 type Props = {};
 
 const CreateCourse: React.FC<Props> = ({}) => {
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(2);
   const [courseInfo, setCourseInfo] = useState({
     name: "",
     description: "",
@@ -21,21 +22,26 @@ const CreateCourse: React.FC<Props> = ({}) => {
   const [benefits, setBenefits] = useState([{ title: "" }]);
   const [prerequisites, setPrerequisites] = useState([{ title: "" }]);
   const [courseContentData, setCourseContentData] = useState([
-    {
-      videoUrl: "",
-      title: "",
-      description: "Untitled Section",
-      links: [
-        {
-          title: "",
-          url: "",
-        },
-      ],
-      suggestion: "",
-    },
-  ]);
+  {
+    videoUrl: "",
+    title: "",
+    description:"",
+    videoSection: "Untitled Section", 
+    links: [
+      {
+        title: "",
+        url: "",
+      },
+    ],
+    suggestion: "",
+  },
+]);
+
   const [courseData, setCourseData] = useState({});
 
+  const handleSubmit =async ()=>{
+
+  }
   return (
     <div className="w-full flex min-h-screen">
       <div className="w-[80%]">
@@ -55,6 +61,15 @@ const CreateCourse: React.FC<Props> = ({}) => {
             setPrerequisites={setPrerequisites}
             active={active}
             setActive={setActive}
+          />
+        )}
+        {active === 2 && (
+          <CourseContent 
+              active={active} 
+              setActive={setActive}
+              courseContentData={courseContentData}
+              setCourseContentData={setCourseContentData}
+              handleSubmit={handleSubmit}
           />
         )}
       </div>
