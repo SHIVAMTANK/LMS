@@ -127,6 +127,7 @@ const CourseContent: React.FC<Props> = ({
       <form onSubmit={handleSubmit} className="space-y-6">
         {courseContentData?.map((item: any, index: number) => {
           const showSectionInput = index === 0 || item.videoSection !== courseContentData[index - 1].videoSection
+          // when
           return (
             <div key={index} className="space-y-4">
               <div

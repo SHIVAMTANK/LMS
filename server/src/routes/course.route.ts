@@ -6,6 +6,7 @@ import {
   addReview,
   deleteCourse,
   editCouser,
+  generateVideoUrl,
   getAllCourses,
   getAllCoursesforAdmin,
   getCourseByUser,
@@ -30,21 +31,37 @@ courseRouter.put(
   editCouser
 );
 
-courseRouter.get("/get-courses",getAllCourses);
+courseRouter.get("/get-courses", getAllCourses);
 courseRouter.get("/get-course/:id", getSingleCourse);
 
-courseRouter.get("/get-course-content/:id",isAutheticated,getCourseByUser)
-courseRouter.put("/add-question",isAutheticated,addQuestion);
+courseRouter.get("/get-course-content/:id", isAutheticated, getCourseByUser);
+courseRouter.put("/add-question", isAutheticated, addQuestion);
 
-courseRouter.put("/add-answer",isAutheticated,addAnwser);
+courseRouter.put("/add-answer", isAutheticated, addAnwser);
 
-courseRouter.put("/add-review/:id",isAutheticated,addReview);
+courseRouter.put("/add-review/:id", isAutheticated, addReview);
 
-courseRouter.put("/add-reply",isAutheticated,authorizeRoles("admin"),addReplyToReview);
+courseRouter.put(
+  "/add-reply",
+  isAutheticated,
+  authorizeRoles("admin"),
+  addReplyToReview
+);
 
-courseRouter.get("/get-courses-admin",isAutheticated,authorizeRoles("admin"),getAllCoursesforAdmin)
+courseRouter.get(
+  "/get-courses-admin",
+  isAutheticated,
+  authorizeRoles("admin"),
+  getAllCoursesforAdmin
+);
 
-courseRouter.delete("/delete-course/:id",isAutheticated,authorizeRoles("admin"),deleteCourse);
+courseRouter.post("/course/getVdoCipherOTP", isAutheticated, generateVideoUrl);
 
+courseRouter.delete(
+  "/delete-course/:id",
+  isAutheticated,
+  authorizeRoles("admin"),
+  deleteCourse
+);
 
 export default courseRouter;
