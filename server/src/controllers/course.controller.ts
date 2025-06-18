@@ -15,7 +15,7 @@ import path from "path";
 import sendMail from "../utils/sendMail";
 import NotificationModel from "../models/notification.model";
 // import { title } from "process";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
 //upload course
@@ -122,23 +122,14 @@ export const getSingleCourse = CatchAsyncError(
 export const getAllCourses = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const isCacheExist = await redis.get("allCourses");
-      if (isCacheExist) {
-        const courses = JSON.parse(isCacheExist);
-        res.status(200).json({
-          success: true,
-          courses,
-        });
-      } else {
-        const courses = await CourseModel.find().select(
-          "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
-        );
-        await redis.set("allCourses", JSON.stringify(courses));
-        res.status(200).json({
-          success: true,
-          courses,
-        });
-      }
+      const courses = await CourseModel.find().select(
+        "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
+      );
+      await redis.set("allCourses", JSON.stringify(courses));
+      res.status(200).json({
+        success: true,
+        courses,
+      });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
@@ -476,7 +467,6 @@ export const deleteCourse = CatchAsyncError(
 
 //generate video url
 
-
 export const generateVideoUrl = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     console.log("generateVideoUrl CALLED");
@@ -490,8 +480,7 @@ export const generateVideoUrl = CatchAsyncError(
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            Authorization: `Apisecret ${process.env.VDOCIPHER_API_SECRET}`
-
+            Authorization: `Apisecret ${process.env.VDOCIPHER_API_SECRET}`,
           },
         }
       );

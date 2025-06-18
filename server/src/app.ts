@@ -22,12 +22,12 @@ app.use(
   })
 );
 
-// Body parser
-app.use(express.json());
+// Body parser with increased size limit
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 // Cookie parser
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
 
 // Test route
 app.get("/test", (req: Request, res: Response) => {
@@ -37,6 +37,7 @@ app.get("/test", (req: Request, res: Response) => {
   });
 });
 
+// Routers
 app.use(
   "/api/v1",
   userRouter,
@@ -47,4 +48,5 @@ app.use(
   layoutRouter
 );
 
+// Error middleware
 app.use(ErrorMiddleware);

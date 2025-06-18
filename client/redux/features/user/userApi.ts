@@ -1,3 +1,4 @@
+import { string } from "yup";
 import { apiSlice } from "../api/apiSlice";
 
 export const userApi = apiSlice.injectEndpoints({
@@ -29,7 +30,29 @@ export const userApi = apiSlice.injectEndpoints({
         credentials: "include" as const,
       }),
     }),
+    getAllUsers: builder.query<any,void>({
+      query: () => ({
+        url: "get-users",
+        method: "GET",
+        credentials: "include" as const,
+      }),
+    }),
+    updateUserRole:builder.mutation({
+      query:({id,role}:{id:string,role:string})=>({
+        url:"update-user-role",
+        method:"PUT",
+        body:{id,role},
+        credentials:"include" as const,
+      })
+    })
+
   }),
 });
 
-export const { useUpdateAvatarMutation, useEditProfileMutation,useEditPasswordMutation } = userApi;
+export const {
+  useUpdateAvatarMutation,
+  useEditProfileMutation,
+  useEditPasswordMutation,
+  useGetAllUsersQuery,
+  useUpdateUserRoleMutation
+} = userApi;

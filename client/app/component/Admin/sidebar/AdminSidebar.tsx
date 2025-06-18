@@ -74,7 +74,7 @@ const contentItems = [
   },
   {
     title: "Live Courses",
-    url: "/admin/live-courses",
+    url: "/admin/courses",
     icon: Video,
     section: "content",
   },
@@ -104,7 +104,7 @@ const customizationItems = [
 const controllersItems = [
   {
     title: "Manage Team",
-    url: "/admin/manage-team",
+    url: "/admin/team",
     icon: UserCog,
     section: "controllers",
   },
