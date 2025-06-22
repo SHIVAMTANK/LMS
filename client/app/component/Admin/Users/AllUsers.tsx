@@ -8,6 +8,7 @@ import { useTheme } from "next-themes";
 import Loader from "../../Loader/Loader";
 import { format } from "timeago.js";
 import {
+  useDeleteUserMutation,
   useGetAllUsersQuery,
   useUpdateUserRoleMutation,
 } from "@/redux/features/user/userApi";
@@ -39,7 +40,7 @@ const AllUser: React.FC<Props> = ({ isTeam }) => {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("admin");
   const [updateUserRole,{isSuccess:updateSuccess,error:updateError}]  = useUpdateUserRoleMutation();
-
+  const [deleteUser,{isSuccess:deleteSuccess,error:deleteError}] = useDeleteUserMutation();
 
 
     useEffect(() => {
@@ -47,13 +48,24 @@ const AllUser: React.FC<Props> = ({ isTeam }) => {
         refetch();
         toast.success("Role updated successfully");
       }
+
+      if(deleteSuccess){
+        refetch();
+        toast.success("User Delete successfully")
+      }
       if (error) {
         if ("data" in error) {
           const errorMessage = error as any;
           toast.error(errorMessage.data.message);
         }
       }
-    }, [updateSuccess, updateError, error, refetch]);
+      if(deleteError){
+        if("data" in deleteError){
+          const deleteErrorMsg = error as any;
+          toast.error(deleteErrorMsg.data.message)
+        }
+      }
+    }, [updateSuccess, updateError, error, refetch, deleteError,deleteSuccess]);
   
 
   // Prevent hydration mismatch
@@ -76,7 +88,7 @@ const AllUser: React.FC<Props> = ({ isTeam }) => {
       field: "name",
       headerName: "Name",
       flex: 1,
-      minWidth: 200,
+      minWidth: 120,
     },
     {
       field: "email",
@@ -108,8 +120,9 @@ const AllUser: React.FC<Props> = ({ isTeam }) => {
       flex: 0.3,
       minWidth: 100,
       sortable: false,
-      renderCell: () => (
+      renderCell: (params:any) => (
         <Button
+          onClick={()=>handleDelete(params.row.id)}
           sx={{
             minWidth: "auto",
             padding: "8px",
@@ -190,6 +203,16 @@ const AllUser: React.FC<Props> = ({ isTeam }) => {
       });
   }
 
+  const handleDelete = async (id:string) => {
+    try{
+      await deleteUser(id).unwrap();
+ 
+
+    }catch(error:any){
+      toast.error(error?.data?.message || "Failed to delete user");
+    }
+  }
+
 
   const handleSubmit = async () => {
     if(!email || !role) return;
@@ -267,7 +290,7 @@ const AllUser: React.FC<Props> = ({ isTeam }) => {
                 "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
             },
             "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: isDark ? "#2563eb" : "#1e40af",
+              backgroundColor: isDark ? "#1e40af" : "#2563eb",
               borderBottom: "none",
               color: "#ffffff !important",
               fontWeight: "600",

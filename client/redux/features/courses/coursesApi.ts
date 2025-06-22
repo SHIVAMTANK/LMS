@@ -12,10 +12,25 @@ export const courseApi = apiSlice.injectEndpoints({
       }),
     }),
     // ✅ Change mutation to query here:
-    getAllCourses: builder.query<any,void>({
+    getAllCourses: builder.query<any, void>({
       query: () => ({
-        url: "get-courses",
+        url: "get-courses-admin",
         method: "GET",
+        credentials: "include" as const,
+      }),
+    }),
+    deleteCourse: builder.mutation({
+      query: (id: string) => ({
+        url: `/delete-course/${id}`,
+        method: "DELETE",
+        credentials: "include" as const,
+      }),
+    }),
+    editCourse: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `edit-course/${id}`,
+        method: "PUT",
+        body: data,
         credentials: "include" as const,
       }),
     }),
@@ -24,5 +39,7 @@ export const courseApi = apiSlice.injectEndpoints({
 
 export const {
   useCreateCourseMutation,
-  useGetAllCoursesQuery, // ✅ correct hook
+  useGetAllCoursesQuery,
+  useDeleteCourseMutation, // ✅ correct hook
+  useEditCourseMutation
 } = courseApi;

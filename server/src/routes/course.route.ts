@@ -5,7 +5,7 @@ import {
   addReplyToReview,
   addReview,
   deleteCourse,
-  editCouser,
+  editCourse,
   generateVideoUrl,
   getAllCourses,
   getAllCoursesforAdmin,
@@ -30,7 +30,7 @@ courseRouter.put(
   updateAccessToken,
   isAutheticated,
   authorizeRoles("admin"),
-  editCouser
+  editCourse
 );
 
 courseRouter.get("/get-courses", getAllCourses);

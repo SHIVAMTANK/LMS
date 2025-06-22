@@ -72,7 +72,7 @@ const CourseInformation: React.FC<Props> = ({ courseInfo, setCourseInfo, active,
             type="text"
             name=""
             required
-            value={courseInfo.name}
+            value={courseInfo?.name || ""}
             onChange={(e: any) => setCourseInfo({ ...courseInfo, name: e.target.value })}
             id="name"
             placeholder="MERN stack LMS platform with next 13"
@@ -89,7 +89,7 @@ const CourseInformation: React.FC<Props> = ({ courseInfo, setCourseInfo, active,
             rows={8}
             placeholder="Write something amazing..."
             className={`${styles.input} !h-min !py-2 w-full px-4 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm transition-all duration-200 resize-none`}
-            value={courseInfo.description}
+            value={courseInfo?.description || ""}
             onChange={(e: any) => setCourseInfo({ ...courseInfo, description: e.target.value })}
           ></textarea>
         </div>
@@ -105,7 +105,7 @@ const CourseInformation: React.FC<Props> = ({ courseInfo, setCourseInfo, active,
                 type="number"
                 name=""
                 required
-                value={courseInfo.price}
+                value={courseInfo?.price || ""}
                 onChange={(e: any) => setCourseInfo({ ...courseInfo, price: e.target.value })}
                 id="price"
                 placeholder="29"
@@ -124,7 +124,7 @@ const CourseInformation: React.FC<Props> = ({ courseInfo, setCourseInfo, active,
               <input
                 type="number"
                 name=""
-                value={courseInfo.estimatedPrice}
+                value={courseInfo?.estimatedPrice || ""}
                 onChange={(e: any) => setCourseInfo({ ...courseInfo, estimatedPrice: e.target.value })}
                 id="price"
                 placeholder="79"
@@ -142,7 +142,7 @@ const CourseInformation: React.FC<Props> = ({ courseInfo, setCourseInfo, active,
             type="text"
             name=""
             required
-            value={courseInfo.tags}
+            value={courseInfo?.tags || ""}
             onChange={(e: any) => setCourseInfo({ ...courseInfo, tags: e.target.value })}
             id="tags"
             placeholder="MERN, Next 13, Socket io, tailwind css, LMS"
@@ -158,7 +158,7 @@ const CourseInformation: React.FC<Props> = ({ courseInfo, setCourseInfo, active,
               type="text"
               name=""
               required
-              value={courseInfo.level}
+              value={courseInfo?.level || ""}
               onChange={(e: any) => setCourseInfo({ ...courseInfo, level: e.target.value })}
               id="level"
               placeholder="Beginner/Intermediate/Expert"
@@ -171,7 +171,7 @@ const CourseInformation: React.FC<Props> = ({ courseInfo, setCourseInfo, active,
               type="text"
               name=""
               required
-              value={courseInfo.demoUrl}
+              value={courseInfo?.demoUrl || ""}
               onChange={(e: any) => setCourseInfo({ ...courseInfo, demoUrl: e.target.value })}
               id="demoUrl"
               placeholder="https://example.com/demo"
@@ -194,7 +194,8 @@ const CourseInformation: React.FC<Props> = ({ courseInfo, setCourseInfo, active,
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
-            {courseInfo.thumbnail ? (
+            {/* **UPDATED: Added proper null check for thumbnail** */}
+            {courseInfo?.thumbnail ? (
               <div className="relative w-full">
                 <Image
                   src={courseInfo.thumbnail || "/placeholder.svg"}

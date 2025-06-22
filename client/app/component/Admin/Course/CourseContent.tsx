@@ -48,10 +48,16 @@ const CourseContent: React.FC<Props> = ({
   }
 
   const newContentHandler = (item: any) => {
+    // **UPDATED: Added proper null/undefined checks**
     if (
+      !item ||
       item.title === "" ||
       item.description === "" ||
       item.videoUrl === "" ||
+      !item.links ||
+      !Array.isArray(item.links) ||
+      item.links.length === 0 ||
+      !item.links[0] ||
       item.links[0].title === "" ||
       item.links[0].url === ""
     ) {
@@ -78,12 +84,19 @@ const CourseContent: React.FC<Props> = ({
   }
 
   const addNewSection = () => {
+    // **UPDATED: Added proper null/undefined checks**
+    const lastItem = courseContentData[courseContentData.length - 1]
     if (
-      courseContentData[courseContentData.length - 1].title === "" ||
-      courseContentData[courseContentData.length - 1].description === "" ||
-      courseContentData[courseContentData.length - 1].videoUrl === "" ||
-      courseContentData[courseContentData.length - 1].links[0].title === "" ||
-      courseContentData[courseContentData.length - 1].links[0].url === ""
+      !lastItem ||
+      lastItem.title === "" ||
+      lastItem.description === "" ||
+      lastItem.videoUrl === "" ||
+      !lastItem.links ||
+      !Array.isArray(lastItem.links) ||
+      lastItem.links.length === 0 ||
+      !lastItem.links[0] ||
+      lastItem.links[0].title === "" ||
+      lastItem.links[0].url === ""
     ) {
       toast.error("Please fill all the fields first!")
     } else {
@@ -104,12 +117,19 @@ const CourseContent: React.FC<Props> = ({
   }
 
   const handleOptions = () => {
+    // **UPDATED: Added proper null/undefined checks**
+    const lastItem = courseContentData[courseContentData.length - 1]
     if (
-      courseContentData[courseContentData.length - 1].title === "" ||
-      courseContentData[courseContentData.length - 1].description === "" ||
-      courseContentData[courseContentData.length - 1].videoUrl === "" ||
-      courseContentData[courseContentData.length - 1].links[0].title === "" ||
-      courseContentData[courseContentData.length - 1].links[0].url === ""
+      !lastItem ||
+      lastItem.title === "" ||
+      lastItem.description === "" ||
+      lastItem.videoUrl === "" ||
+      !lastItem.links ||
+      !Array.isArray(lastItem.links) ||
+      lastItem.links.length === 0 ||
+      !lastItem.links[0] ||
+      lastItem.links[0].title === "" ||
+      lastItem.links[0].url === ""
     ) {
       toast.error("section can't be empty!")
     } else {
@@ -127,7 +147,9 @@ const CourseContent: React.FC<Props> = ({
       <form onSubmit={handleSubmit} className="space-y-6">
         {courseContentData?.map((item: any, index: number) => {
           const showSectionInput = index === 0 || item.videoSection !== courseContentData[index - 1].videoSection
-          // when
+          // **UPDATED: Added null check for item**
+          if (!item) return null
+
           return (
             <div key={index} className="space-y-4">
               <div
@@ -143,7 +165,7 @@ const CourseContent: React.FC<Props> = ({
                         className={`text-xl font-semibold ${
                           item.videoSection === "Untitled Section" ? "w-44" : "w-auto min-w-0"
                         } font-medium cursor-pointer text-gray-800 dark:text-white bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 transition-all duration-200`}
-                        value={item.videoSection}
+                        value={item.videoSection || ""}
                         onChange={(e) => {
                           const updateData = [...courseContentData]
                           updateData[index].videoSection = e.target.value
@@ -205,7 +227,7 @@ const CourseContent: React.FC<Props> = ({
                         type="text"
                         placeholder="Project Plan..."
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm transition-all duration-200"
-                        value={item.title}
+                        value={item.title || ""}
                         onChange={(e) => {
                           const updatedData = [...courseContentData]
                           updatedData[index].title = e.target.value
@@ -222,7 +244,7 @@ const CourseContent: React.FC<Props> = ({
                         type="text"
                         placeholder="https://example.com/video..."
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm transition-all duration-200"
-                        value={item.videoUrl}
+                        value={item.videoUrl || ""}
                         onChange={(e) => {
                           const updatedData = [...courseContentData]
                           updatedData[index].videoUrl = e.target.value
@@ -239,7 +261,7 @@ const CourseContent: React.FC<Props> = ({
                         rows={6}
                         placeholder="Describe what this video covers..."
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm transition-all duration-200 resize-vertical"
-                        value={item.description}
+                        value={item.description || ""}
                         onChange={(e) => {
                           const updatedData = [...courseContentData]
                           updatedData[index].description = e.target.value
@@ -250,50 +272,57 @@ const CourseContent: React.FC<Props> = ({
 
                     <div className="space-y-4">
                       <h4 className="text-lg font-medium text-gray-700 dark:text-gray-300">Resource Links</h4>
-                      {item?.links.map((link: any, linkIndex: number) => (
-                        <div
-                          key={linkIndex}
-                          className="p-4 bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm"
-                        >
-                          <div className="flex items-center justify-between mb-3">
-                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Link {linkIndex + 1}
-                            </label>
-                            <AiOutlineDelete
-                              className={`text-lg ${
-                                linkIndex === 0
-                                  ? "cursor-not-allowed text-gray-400 dark:text-gray-600"
-                                  : "cursor-pointer text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
-                              } transition-colors duration-200`}
-                              onClick={() => (linkIndex === 0 ? null : handleRemoveLink(index, linkIndex))}
-                            />
+                      {/* **UPDATED: Added proper null checks for links array** */}
+                      {item?.links &&
+                        Array.isArray(item.links) &&
+                        item.links.map((link: any, linkIndex: number) => (
+                          <div
+                            key={linkIndex}
+                            className="p-4 bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm"
+                          >
+                            <div className="flex items-center justify-between mb-3">
+                              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Link {linkIndex + 1}
+                              </label>
+                              <AiOutlineDelete
+                                className={`text-lg ${
+                                  linkIndex === 0
+                                    ? "cursor-not-allowed text-gray-400 dark:text-gray-600"
+                                    : "cursor-pointer text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
+                                } transition-colors duration-200`}
+                                onClick={() => (linkIndex === 0 ? null : handleRemoveLink(index, linkIndex))}
+                              />
+                            </div>
+                            <div className="space-y-3">
+                              <input
+                                type="text"
+                                placeholder="Source Code... (Link title)"
+                                className="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm transition-all duration-200"
+                                value={link?.title || ""}
+                                onChange={(e) => {
+                                  const updatedData = [...courseContentData]
+                                  if (updatedData[index].links[linkIndex]) {
+                                    updatedData[index].links[linkIndex].title = e.target.value
+                                    setCourseContentData(updatedData)
+                                  }
+                                }}
+                              />
+                              <input
+                                type="url"
+                                placeholder="https://github.com/... (Link URL)"
+                                className="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm transition-all duration-200"
+                                value={link?.url || ""}
+                                onChange={(e) => {
+                                  const updatedData = [...courseContentData]
+                                  if (updatedData[index].links[linkIndex]) {
+                                    updatedData[index].links[linkIndex].url = e.target.value
+                                    setCourseContentData(updatedData)
+                                  }
+                                }}
+                              />
+                            </div>
                           </div>
-                          <div className="space-y-3">
-                            <input
-                              type="text"
-                              placeholder="Source Code... (Link title)"
-                              className="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm transition-all duration-200"
-                              value={link.title}
-                              onChange={(e) => {
-                                const updatedData = [...courseContentData]
-                                updatedData[index].links[linkIndex].title = e.target.value
-                                setCourseContentData(updatedData)
-                              }}
-                            />
-                            <input
-                              type="url"
-                              placeholder="https://github.com/... (Link URL)"
-                              className="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm transition-all duration-200"
-                              value={link.url}
-                              onChange={(e) => {
-                                const updatedData = [...courseContentData]
-                                updatedData[index].links[linkIndex].url = e.target.value
-                                setCourseContentData(updatedData)
-                              }}
-                            />
-                          </div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
 
                     <div

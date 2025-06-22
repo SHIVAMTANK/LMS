@@ -2,18 +2,65 @@
 
 import type React from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, Button } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useTheme } from "next-themes";
 import { FiEdit2 } from "react-icons/fi";
-import { useGetAllCoursesQuery } from "@/redux/features/courses/coursesApi";
+import {
+  useDeleteCourseMutation,
+  useGetAllCoursesQuery,
+} from "@/redux/features/courses/coursesApi";
 import Loader from "../../Loader/Loader";
 import { format } from "timeago.js";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import Link from "@mui/material/Link";
 
 const AllCourse: React.FC = () => {
   const { theme } = useTheme();
+  const [open, setOpen] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState<string>("");
+  const { data, isLoading, refetch } = useGetAllCoursesQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+  const [deleteCourse, { isSuccess, error }] = useDeleteCourseMutation();
 
-  const { data, isLoading, error } = useGetAllCoursesQuery();
+  useEffect(() => {
+    if (isSuccess) {
+      refetch();
+      toast.success("Course deleted successfully");
+    }
+    if (error && "data" in error) {
+      const err = error as any;
+      toast.error(err.data.message || "Error deleting course");
+    }
+  }, [isSuccess, error,refetch]);
+
+  const handleDeleteClick = (courseId: string) => {
+    setCourseToDelete(courseId);
+    setOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await deleteCourse(courseToDelete);
+      setOpen(false);
+      setCourseToDelete("");
+    } catch (error: any) {
+      console.log(error.data.message);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setOpen(false);
+    setCourseToDelete("");
+  };
 
   const columns = [
     {
@@ -52,8 +99,10 @@ const AllCourse: React.FC = () => {
       flex: 0.3,
       minWidth: 100,
       sortable: false,
-      renderCell: () => (
-        <Button
+      renderCell: (params: any) => (
+        <Link
+          href={`/admin/edit-course/${params.row.id}`}
+          underline="none"
           sx={{
             minWidth: "auto",
             padding: "6px",
@@ -77,7 +126,7 @@ const AllCourse: React.FC = () => {
             } transition-colors`}
             size={18}
           />
-        </Button>
+        </Link>
       ),
     },
     {
@@ -86,8 +135,12 @@ const AllCourse: React.FC = () => {
       flex: 0.3,
       minWidth: 100,
       sortable: false,
-      renderCell: () => (
+      renderCell: (params: any) => (
         <Button
+          onClick={() => {
+            setCourseToDelete(params.row.id);
+            setOpen(true);
+          }}
           sx={{
             minWidth: "auto",
             padding: "6px",
@@ -116,7 +169,6 @@ const AllCourse: React.FC = () => {
     },
   ];
   const rows: any = [];
-
   {
     data &&
       data.courses.forEach((item: any) => {
@@ -129,6 +181,7 @@ const AllCourse: React.FC = () => {
         });
       });
   }
+
   return (
     <div className="p-4">
       <div className="mb-4">
@@ -329,6 +382,77 @@ const AllCourse: React.FC = () => {
           />
         </Box>
       </Box>
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={open}
+        onClose={handleDeleteCancel}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            backgroundColor: theme === "dark" ? "#1f2937" : "#ffffff",
+            color: theme === "dark" ? "#ffffff" : "#000000",
+            borderRadius: "12px",
+          },
+        }}
+      >
+        <DialogContent
+          sx={{
+            backgroundColor: theme === "dark" ? "#1f2937" : "#ffffff",
+            padding: "32px 24px 24px 24px",
+            textAlign: "center",
+          }}
+        >
+          <h2
+            className={`text-lg font-semibold mb-4 ${
+              theme === "dark" ? "text-white" : "text-gray-900"
+            }`}
+          >
+            Are you sure you want to delete this course?
+          </h2>
+        </DialogContent>
+        <DialogActions
+          sx={{
+            backgroundColor: theme === "dark" ? "#1f2937" : "#ffffff",
+            padding: "0 24px 32px 24px",
+            justifyContent: "center",
+            gap: "12px",
+          }}
+        >
+          <Button
+            onClick={handleDeleteCancel}
+            sx={{
+              backgroundColor: "#10b981",
+              color: "#ffffff",
+              padding: "8px 24px",
+              borderRadius: "8px",
+              fontWeight: "500",
+              textTransform: "none",
+              "&:hover": {
+                backgroundColor: "#059669",
+              },
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            sx={{
+              backgroundColor: "#ef4444",
+              color: "#ffffff",
+              padding: "8px 24px",
+              borderRadius: "8px",
+              fontWeight: "500",
+              textTransform: "none",
+              "&:hover": {
+                backgroundColor: "#dc2626",
+              },
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
