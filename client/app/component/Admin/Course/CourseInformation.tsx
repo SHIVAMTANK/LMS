@@ -1,9 +1,10 @@
 "use client"
 
 import { styles } from "@/app/styles/style"
+import { useGetHeroDataQuery } from "@/redux/features/layout/layoutApi"
 import Image from "next/image"
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 type Props = {
   courseInfo: any
@@ -15,10 +16,23 @@ type Props = {
 const CourseInformation: React.FC<Props> = ({ courseInfo, setCourseInfo, active, setActive }) => {
   const [dragging, setDragging] = useState(false)
 
+  const { data, isLoading, refetch } = useGetHeroDataQuery("Categories", {
+    refetchOnMountOrArgChange: true,
+  })
+
+  const [categories, setCategories] = useState([])
+
+  useEffect(() => {
+    if (data) {
+      setCategories(data?.layout?.categories)
+    }
+  }, [data])
+
   const handleSubmit = (e: any) => {
     e.preventDefault()
     setActive(active + 1)
   }
+
   const handleFileChange = (e: any) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -42,6 +56,7 @@ const CourseInformation: React.FC<Props> = ({ courseInfo, setCourseInfo, active,
     e.preventDefault()
     setDragging(false)
   }
+
   const handleDrop = (e: any) => {
     e.preventDefault()
     setDragging(false)
@@ -125,7 +140,12 @@ const CourseInformation: React.FC<Props> = ({ courseInfo, setCourseInfo, active,
                 type="number"
                 name=""
                 value={courseInfo?.estimatedPrice || ""}
-                onChange={(e: any) => setCourseInfo({ ...courseInfo, estimatedPrice: e.target.value })}
+                onChange={(e: any) =>
+                  setCourseInfo({
+                    ...courseInfo,
+                    estimatedPrice: e.target.value,
+                  })
+                }
                 id="price"
                 placeholder="79"
                 className={`${styles.input} w-full pl-8 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm transition-all duration-200`}
@@ -149,6 +169,38 @@ const CourseInformation: React.FC<Props> = ({ courseInfo, setCourseInfo, active,
             className={`${styles.input} w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm transition-all duration-200`}
           />
           <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Separate tags with commas</p>
+        </div>
+
+        {/* NEW: Course Category Selection */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="category">
+            Course Category
+          </label>
+          <select
+            name=""
+            required
+            value={courseInfo?.category || ""}
+            onChange={(e: any) => setCourseInfo({ ...courseInfo, category: e.target.value })}
+            id="category"
+            className={`${styles.input} w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm transition-all duration-200 min-h-[48px] leading-normal appearance-none`}
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' strokeLinecap='round' strokeLinejoin='round' strokeWidth='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+              backgroundPosition: "right 0.75rem center",
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "1.5em 1.5em",
+              paddingRight: "2.5rem",
+            }}
+          >
+            <option value="" disabled>
+              Select a category
+            </option>
+            {categories?.map((category: any, index: number) => (
+              <option key={index} value={category.title} className="py-2">
+                {category.title}
+              </option>
+            ))}
+          </select>
+          {isLoading && <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Loading categories...</p>}
         </div>
 
         <div className="w-full flex flex-col md:flex-row gap-6">
@@ -194,7 +246,6 @@ const CourseInformation: React.FC<Props> = ({ courseInfo, setCourseInfo, active,
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
-            {/* **UPDATED: Added proper null check for thumbnail** */}
             {courseInfo?.thumbnail ? (
               <div className="relative w-full">
                 <Image

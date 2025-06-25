@@ -137,6 +137,7 @@ const CourseContent: React.FC<Props> = ({
       handleCourseSubmit()
     }
   }
+console.log(courseContentData);
 
   return (
     <div className="w-[85%] max-w-5xl mx-auto mt-16 bg-white dark:bg-slate-800 p-8 rounded-xl shadow-lg">
@@ -248,6 +249,22 @@ const CourseContent: React.FC<Props> = ({
                         onChange={(e) => {
                           const updatedData = [...courseContentData]
                           updatedData[index].videoUrl = e.target.value
+                          setCourseContentData(updatedData)
+                        }}
+                      />
+                    </div>
+                     <div>
+                      <label className="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">
+                        Video Length (in minutes)
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="20"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm transition-all duration-200"
+                        value={item.videoLength || ""}
+                        onChange={(e) => {
+                          const updatedData = [...courseContentData]
+                          updatedData[index].videoLength = e.target.value
                           setCourseContentData(updatedData)
                         }}
                       />

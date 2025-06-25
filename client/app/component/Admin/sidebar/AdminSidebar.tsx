@@ -113,7 +113,7 @@ const controllersItems = [
 const analyticsItems = [
   {
     title: "Course Analytics",
-    url: "/admin/course-analytics",
+    url: "/admin/courses-analytics",
     icon: BarChart3,
     section: "analytics",
   },

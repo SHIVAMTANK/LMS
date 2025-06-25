@@ -19,7 +19,7 @@ const AdminDashboard: React.FC<Props> = ({}) => {
         <div className="flex">
           <AppSidebar />
           <div className="flex-1 transition-all duration-300">
-            <DashboardHero />
+            <DashboardHero isDashboard={true} />
             {/* Other dashboard content goes here */}
           </div>
         </div>

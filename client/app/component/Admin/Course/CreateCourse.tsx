@@ -37,6 +37,7 @@ const CreateCourse: React.FC<Props> = ({}) => {
     estimatedPrice: "",
     tags: "",
     level: "",
+    categories:"",
     demoUrl: "",
     thumbnail: "",
   });
@@ -48,6 +49,7 @@ const CreateCourse: React.FC<Props> = ({}) => {
       title: "",
       description: "",
       videoSection: "Untitled Section",
+      videoLength:"",
       links: [
         {
           title: "",
@@ -75,6 +77,7 @@ const CreateCourse: React.FC<Props> = ({}) => {
         videoUrl: courseContent.videoUrl,
         title: courseContent.title,
         description: courseContent.description,
+        videoLength:courseContent.videoLength,
         videoSection: courseContent.description,
         links: courseContent.links.map((link) => ({
           title: link.title,
@@ -113,7 +116,8 @@ const CreateCourse: React.FC<Props> = ({}) => {
     }  
     
   };
-
+  console.log(courseData);
+  
   return (
     <div className="w-full flex min-h-screen">
       <div className="w-[80%]">
