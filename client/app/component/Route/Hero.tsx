@@ -1,19 +1,21 @@
-import React from "react";
-import { Search, Star, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Image from "next/image";
+import { Search, Star, Users } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import Image from "next/image"
+import { useGetHeroDataQuery } from "@/redux/features/layout/layoutApi"
 
 const Hero = () => {
   const userAvatars = [
     { id: 1, name: "John", src: "/woman.png" },
     { id: 2, name: "Sarah", src: "/man.png" },
     { id: 3, name: "Mike", src: "/hacker.png" },
-  ];
+  ]
+
+  const { data, refetch } = useGetHeroDataQuery("Banner", {})
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-black dark:to-gray-800 text-black dark:text-white font-inter relative">
+    <div className="min-h-screen text-black dark:text-white font-inter relative">
       {/* Background blur elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-20 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
@@ -22,7 +24,7 @@ const Hero = () => {
       </div>
 
       {/* Content wrapper */}
-      <div className="max-w-[1600px] mx-auto px-6 py-20 lg:py-28 relative z-10">
+      <div className="max-w-[1600px] mx-auto px-6 pt-20 lg:pt-28 relative z-10">
         <div className="grid lg:grid-cols-[1.2fr_1.2fr] gap-30 items-center">
           {/* Left Content */}
           <div className="space-y-8 animate-fade-in text-base lg:text-3xl xl:text-xl">
@@ -32,18 +34,13 @@ const Hero = () => {
             </div>
 
             <div className="space-y-6">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight animate-fade-in delay-200">
-                Improve Your{" "}
-                <span className="text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text animate-pulse">
-                  Online Learning
-                </span>{" "}
-                Experience
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight animate-fade-in delay-200 text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text hover:from-blue-500 hover:via-purple-600 hover:to-pink-600 transition-all duration-500 hover:scale-105">
+                {data?.layout?.banner?.title || "Improve Your Online Learning Experience"}
               </h1>
 
               <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl animate-fade-in delay-300">
-                40k+ Online courses & 500k+ registered students. Find your
-                desired courses from them and improve your learning experience
-                instantly.
+                {data?.layout?.banner?.subTitle ||
+                  "40k+ Online courses & 500k+ registered students. Find your desired courses from them and improve your learning experience instantly."}
               </p>
             </div>
 
@@ -72,10 +69,8 @@ const Hero = () => {
                       className={`w-10 h-10 border-2 border-white dark:border-gray-800 hover:scale-110 transition-transform duration-200 hover:z-10 relative animate-fade-in`}
                       style={{ animationDelay: `${600 + index * 100}ms` }}
                     >
-                      <AvatarImage src={user.src} alt={user.name} />
-                      <AvatarFallback className="bg-blue-500 text-white text-sm">
-                        {user.name[0]}
-                      </AvatarFallback>
+                      <AvatarImage src={user.src || "/placeholder.svg"} alt={user.name} />
+                      <AvatarFallback className="bg-blue-500 text-white text-sm">{user.name[0]}</AvatarFallback>
                     </Avatar>
                   ))}
                   <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-700 flex items-center justify-center hover:scale-110 transition-transform duration-200 animate-fade-in delay-700">
@@ -106,7 +101,7 @@ const Hero = () => {
               <div className="aspect-square bg-gray-200 dark:bg-gradient-to-br dark:from-gray-800/20 dark:to-gray-900/20 rounded-2xl overflow-hidden flex items-center justify-center">
                 <div className="relative w-full h-full rounded-2xl overflow-hidden group">
                   <Image
-                    src="/ChatGPT Image Jun 2, 2025, 11_14_51 AM.png"
+                    src={data?.layout?.banner?.image?.url || "/mainImage.png"}
                     alt="ChatGPT snapshot"
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -126,7 +121,7 @@ const Hero = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Hero;
+export default Hero

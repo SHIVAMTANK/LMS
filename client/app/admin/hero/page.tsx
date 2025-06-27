@@ -4,10 +4,12 @@ import { AppSidebar } from "@/app/component/Admin/sidebar/AdminSidebar"
 import Heading from "@/app/utils/Heading"
 import DashboardHeader from "@/app/component/Admin/DashboardHeader"
 import EditHero from '../../component/Admin/Customization/EditHero'
+import { useState } from "react"
 
 type Props = {}
 
-const page: React.FC<Props> = ({}) => {
+const Page: React.FC<Props> = ({}) => {
+  const [open,setOpen] = useState<boolean>(false);
   return (
     <div>
       <Heading
@@ -18,7 +20,7 @@ const page: React.FC<Props> = ({}) => {
       <div className="flex">
         <AppSidebar />
         <div className="flex-1 transition-all duration-300">
-          <DashboardHeader />
+          <DashboardHeader open={open} setOpen={setOpen}/>
           <div className="p-4">
             <EditHero />
           </div>
@@ -28,4 +30,4 @@ const page: React.FC<Props> = ({}) => {
   )
 }
 
-export default page;
+export default Page;
