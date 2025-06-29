@@ -5,6 +5,11 @@ import Heading from "./utils/Heading";
 import Header from "./component/Header";
 import Hero from "./component/Route/Hero";
 import Courses from "./component/Route/Courses";
+import Reviews from './component/Route/Reviews'
+import FAQ from './component/FAQ/FAQ'
+import Footer from './component/Footer/Footer'
+
+
 const Page: FC = () => {
   const [open, setOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(0);
@@ -26,7 +31,9 @@ const Page: FC = () => {
       />
       <Hero />
       <Courses />
-      
+      <Reviews />
+      <FAQ />
+      <Footer />
     </div>
   );
 };
