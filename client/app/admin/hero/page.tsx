@@ -1,3 +1,4 @@
+'use client'
 
 import type React from "react"
 import { AppSidebar } from "@/app/component/Admin/sidebar/AdminSidebar"
