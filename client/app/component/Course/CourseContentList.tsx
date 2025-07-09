@@ -1,139 +1,136 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { BsChevronDown, BsChevronUp } from "react-icons/bs"
-import { MdOutlineOndemandVideo } from "react-icons/md"
+import type React from "react";
+import { useState } from "react";
+import { ChevronDown, ChevronUp, Play } from "lucide-react";
 
-type Props = {
-  data: any
-  activeVideo?: number
-  setActiveVideo?: any
-  isDemo?: boolean
+interface CourseContentListProps {
+  data: any[];
+  activeVideo: number | null;
+  setActiveVideo: ((index: number) => void) | null;
+  isDemo?: boolean;
 }
 
-const CourseContentList: React.FC<Props> = ({ data, activeVideo, setActiveVideo, isDemo }) => {
-  const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set())
+const CourseContentList: React.FC<CourseContentListProps> = ({
+  data,
+  activeVideo,
+  setActiveVideo,
+  isDemo = false,
+}) => {
+  const [visibleSections, setVisibleSections] = useState(new Set<string>());
 
-  // Get unique video sections
-  const videoSections: string[] = [...new Set<string>(data?.map((item: any) => item.videoSection))]
-
-  let totalCount = 0 // Initialize video counter for indexing
+  let totalCount = 0;
+  const videoSections = [
+    ...new Set(data.map((item: any) => item.videoSection)),
+  ];
 
   const toggleSection = (section: string) => {
-    const newVisibleSections = new Set(visibleSections)
-    if (newVisibleSections.has(section)) {
-      newVisibleSections.delete(section)
-    } else {
-      newVisibleSections.add(section)
-    }
-    setVisibleSections(newVisibleSections)
-  }
+    setVisibleSections((prevVisibleSections) => {
+      const newVisibleSections = new Set(prevVisibleSections);
+      if (newVisibleSections.has(section)) {
+        newVisibleSections.delete(section);
+      } else {
+        newVisibleSections.add(section);
+      }
+      return newVisibleSections;
+    });
+  };
 
-  // Format time function
   const formatTime = (minutes: number): string => {
-    if (minutes < 1) {
-      return `${Math.round(minutes * 60)} seconds`
-    } else if (minutes < 60) {
-      return `${Math.round(minutes)} minutes`
-    } else {
-      const hours = Math.floor(minutes / 60)
-      const remainingMinutes = Math.round(minutes % 60)
-      return `${hours} hour${hours > 1 ? "s" : ""}${remainingMinutes > 0 ? ` ${remainingMinutes} min` : ""}`
+    if (minutes < 60) {
+      return `${minutes} minutes`;
     }
-  }
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return `${hours}.${Math.floor((remainingMinutes / 60) * 100)
+      .toString()
+      .padStart(2, "0")} hours`;
+  };
 
   return (
-    <div
-      className={`w-full ${
-        isDemo ? "ml-[-30px] min-h-screen sticky top-24 left-0 z-30 px-6 py-4 bg-white dark:bg-gray-900 shadow-lg" : ""
-      }`}
-    >
-      {videoSections.map((section: string, sectionIndex: number) => {
-        const isSectionVisible = visibleSections.has(section)
-        const sectionVideos = data.filter((item: any) => item.videoSection === section)
-        const sectionVideoCount = sectionVideos.length
-        const sectionVideoLength = sectionVideos.reduce((total: number, item: any) => total + item.videoLength, 0)
-        const sectionStartIndex = totalCount
-        totalCount += sectionVideoCount
-        const sectionContentHours = sectionVideoLength / 60
+    <div className="w-full bg-gray-900 text-white">
+      <div className="space-y-0">
+        <h2 className="text-xl font-semibold mb-6 text-white">
+          Course Overview
+        </h2>
 
-        return (
-          <div
-            key={section}
-            className="mb-6 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800"
-          >
+        {videoSections.map((section: string, sectionIndex: number) => {
+          const isSectionVisible = visibleSections.has(section);
+          const sectionVideos = data.filter(
+            (item: any) => item.videoSection === section
+          );
+          const sectionVideoCount = sectionVideos.length;
+          const sectionVideoLength = sectionVideos.reduce(
+            (total: number, item: any) => total + (item.videoLength || 0),
+            0
+          );
+          const sectionStartIndex = totalCount;
+          totalCount += sectionVideoCount;
+
+          return (
             <div
-              className="p-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 cursor-pointer"
-              onClick={() => toggleSection(section)}
+              key={section}
+              className="border-b border-gray-700 last:border-b-0"
             >
-              {/* Section header */}
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{section}</h2>
-                <button
-                  className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    toggleSection(section)
-                  }}
-                >
+              <button
+                className="w-full flex items-center justify-between py-4 text-left hover:bg-gray-800/30 transition-colors"
+                onClick={() => toggleSection(section)}
+              >
+                <div className="flex-1">
+                  <h3 className="text-base font-normal text-white mb-1">
+                    {section}
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    {sectionVideoCount} Lesson
+                    {sectionVideoCount !== 1 ? "s" : ""} •{" "}
+                    {formatTime(sectionVideoLength)}
+                  </p>
+                </div>
+                <div className="ml-4 flex-shrink-0">
                   {isSectionVisible ? (
-                    <BsChevronUp size={20} className="text-gray-600 dark:text-gray-400" />
+                    <ChevronUp className="w-5 h-5 text-gray-400" />
                   ) : (
-                    <BsChevronDown size={20} className="text-gray-600 dark:text-gray-400" />
+                    <ChevronDown className="w-5 h-5 text-gray-400" />
                   )}
-                </button>
-              </div>
-              <div className="mt-2 flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <span className="font-medium">{sectionVideoCount} Lessons</span>
-                <span className="mx-2">•</span>
-                <span>{formatTime(sectionVideoLength / 60)}</span>
-              </div>
-            </div>
+                </div>
+              </button>
 
-            {isSectionVisible && (
-              <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                {sectionVideos.map((item: any, index: number) => {
-                  const videoIndex: number = sectionStartIndex + index
-                  const contentLength: number = item.videoLength / 60
-                  const isActive = activeVideo === videoIndex
+              {isSectionVisible && (
+                <div className="pb-4 ml-4">
+                  {sectionVideos.map((item: any, index: number) => {
+                    const videoIndex: number = sectionStartIndex + index;
+                    const isActive = activeVideo === videoIndex;
 
-                  return (
-                    <div
-                      key={item._id}
-                      onClick={() => (isDemo ? null : setActiveVideo(videoIndex))}
-                      className={`p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer ${
-                        isActive ? "bg-blue-50 dark:bg-blue-900/20" : ""
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="flex-shrink-0">
-                          <MdOutlineOndemandVideo
-                            size={22}
-                            className={`${isActive ? "text-blue-600 dark:text-blue-400" : "text-cyan-600 dark:text-cyan-400"}`}
-                          />
+                    return (
+                      <div
+                        key={item._id || index}
+                        onClick={() =>
+                          isDemo ? null : setActiveVideo?.(videoIndex)
+                        }
+                        className={`flex items-center gap-3 py-3 cursor-pointer hover:bg-gray-800/20 transition-colors ${
+                          isActive ? "bg-gray-800/40" : ""
+                        }`}
+                      >
+                        <Play className="w-4 h-4 text-teal-400 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-white text-sm block truncate">
+                            {item.title}
+                          </span>
                         </div>
-                        <h1
-                          className={`text-sm font-medium ${
-                            isActive ? "text-blue-700 dark:text-blue-300" : "text-gray-800 dark:text-gray-200"
-                          }`}
-                        >
-                          {item.title}
-                        </h1>
+                        <span className="text-gray-400 text-sm flex-shrink-0">
+                          {item.videoLength} minutes
+                        </span>
                       </div>
-                      <h5 className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                        {formatTime(contentLength)}
-                      </h5>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        )
-      })}
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default CourseContentList
+export default CourseContentList;

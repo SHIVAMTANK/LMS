@@ -9,11 +9,31 @@ import ejs from "ejs";
 import sendMail from "../utils/sendMail";
 import NotificationModel from "../models/notification.model";
 import { getAllOrdersService, newOrder } from "../services/order.service";
+import dotenv from "dotenv";
+import { redis } from "../utils/redis";
+dotenv.config();
+
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 export const createOrder = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { courseId, payment_info } = req.body as IOrder;
+
+      if(payment_info){
+        if("id" in payment_info){
+          const paymentIntentId= payment_info.id;
+          const paymentIntent = await stripe.paymentIntents.retrieve(
+            paymentIntentId
+          );
+
+          if(paymentIntent.status !== "succeeded"){
+            return next(
+              new ErrorHandler("Payment not authorized!!", 400)
+            );
+          }
+        }
+      }
 
       const user = await userModel.findById(req.user?._id);
 
@@ -77,6 +97,7 @@ export const createOrder = CatchAsyncError(
 
       user?.courses.push(course?._id);
 
+      await redis.set(req.user?._id as string, JSON.stringify(user));
       await user?.save();
 
       const notification = await NotificationModel.create({
@@ -106,4 +127,38 @@ export const getAllOrders = CatchAsyncError(
   }
 );
 
-                       
+// send stripe publishble key
+
+export const sendStripePublishableKey = CatchAsyncError(
+  async (req: Request, res: Response) => {
+    res.status(200).json({
+      publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+    });
+  }
+);
+
+//new payment
+
+export const newPayment = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const myPayment = await stripe.paymentIntents.create({
+        amount: req.body.amount,
+        currency: "usd",
+        metadata: {
+          company: "Learnex",
+        },
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+
+      res.status(200).json({
+        success: true,
+        client_secret: myPayment.client_secret,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
